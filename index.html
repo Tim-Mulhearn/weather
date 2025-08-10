@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Weather</title>
+  <link rel="icon" type="image/x-icon" href="fav-dark.ico">
+  <link rel="stylesheet" href="styles/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body class="dark-mode">
+  <main id="app">
+    <section>
+      <!-- TOP SECTION -->
+      <div class="top-container">
+        <!-- TOP BAR LEFT -->
+        <div class="top-left" ref="searchWrap">
+          <input type="text" placeholder="Search for a city..." v-model="query">
+          <div class="search-results" v-if="showSearchResults">
+            <ul>
+              <li v-if="showSearchResultsNoMatch">
+                <span>No results...</span>
+              </li>
+              <li v-for="(result, index) in searchResults"
+                  :key="result.id || index"
+                  @click="fetchWeatherBySearchTerm(result)">
+                {{ [result.name, result.admin1, result.country].filter(Boolean).join(', ') }}
+              </li>
+            </ul>
+          </div>
+        </div>
+        <!-- TOP BAR MIDDLE -->
+        <div class="top-middle">
+          <button class="top-use-location" @click="getLocationAndWeather">Use My location</button>
+        </div>
+        <!-- TOP BAR RIGHT -->
+        <div class="top-right">
+<!--          <button class="temp-type">&deg;C</button>-->
+<!--          <button class="temp-type">&deg;F</button>-->
+          <button class="temp-type toggle" @click="toggleSiteTheme()">{{ darkModeToggle ? '☀️' : '🌙' }}</button>
+        </div>
+      </div>
+      <div class="loading-message" v-if="loading">Loading data...</div>
+      <!-- MAIN LEFT AND RIGHT SECTION -->
+      <div class="main-container" v-if="weather">
+        <!-- MAIN SECTION LEFT -->
+        <div class="main-left">
+          <div class="content main-weather">
+<!--            <div class="loading-message" v-if="loading">Loading data...</div>-->
+            <div class="error-msg" v-if="errorMsg">{{ errorMsg }}</div>
+            <!-- MAIN WEATHER -->
+            <div class="main-weather-row" v-if="weather">
+              <span class="main-weather-icon">
+                {{ weatherCodeMap[weather.current.weather_code]?.emoji || "❓" }}
+              </span>
+              <span class="main-weather">
+                <div class="main-weather-temp">
+                  {{ Math.round(weather.current.temperature_2m) }}&deg;C
+                </div>
+                <div class="current-condition">
+                  {{ weatherCodeMap[weather.current.weather_code]?.text || "❓" }}
+                </div>
+              </span>
+            </div>
+            <div class="main-weather-location" v-if="weather">
+              {{ city }}
+            </div>
+            <div class="main-weather-update-time"  v-if="weather">
+              Updated at {{ formatDateTime(weather.current.time) }}
+            </div>
+          </div>
+          <!-- HOURLY FORECAST -->
+          <div class="content hourly-forecast" v-if="weather">
+            <div class="section-title">Today</div>
+            <div class="weather-today-container">
+              <div v-for="hour in nextHours" :key="hour">
+                <span>{{ formatDateTime(weather.hourly.time[hour]) }}</span>
+                <span class="weather-hourly-icon">{{ weatherCodeMap[weather.hourly.weather_code[hour]]?.emoji || "❓" }}</span>
+                <span>{{ Math.round(weather.hourly.temperature_2m[hour]) }}&deg;</span>
+              </div>
+            </div>
+          </div>
+          <!-- FEELS LIKE -->
+          <div class="content feels-like" v-if="weather">
+            <div class="section-title">Winds</div>
+            <div class="details-info">
+              <span class="info-left">Wind Speed</span>
+              <span class="info-right">{{ weather.current.wind_speed_10m}} (km/h)</span>
+            </div>
+            <div class="separator"></div>
+            <div class="details-info">
+              <span class="info-left">Wind Direction</span>
+              <span class="info-right">{{ weather.current.wind_direction_10m}}&deg;</span>
+            </div>
+            <div class="separator"></div>
+            <div class="details-info">
+              <span class="info-left">Wind Gusts</span>
+              <span class="info-right">{{ weather.current.wind_gusts_10m}} (km/h)</span>
+            </div>
+          </div>
+        </div>
+        <!-- MAIN CONTAINER RIGHT -->
+        <div class="main-right" v-if="weather">
+          <!-- WEEKLY FORECAST -->
+          <div class="content weekly-forecast">
+            <div class="section-title">Forecast</div>
+            <template v-for="(day, index) in nextSixDays" :key="day">
+              <div class="details-info" >
+                <span class="info-left"> {{ day }}</span>
+                <span class="info-right">{{ Math.round(weather.daily.temperature_2m_min[index]) }}/{{ Math.round(weather.daily.temperature_2m_max[index]) }}&deg;</span>
+              </div>
+              <div class="separator" v-if="index !== nextSixDays.length - 1"></div>
+            </template>
+          </div>
+          <!-- DETAILS -->
+          <div class="content details">
+            <div class="section-title">Daylight</div>
+            <div class="details-info">
+              <span class="info-left">Sunrise</span>
+              <span class="info-right">{{ formatDateTime(weather.daily.sunrise[0]) }}</span>
+            </div>
+            <div class="separator"></div>
+            <div class="details-info">
+              <span class="details-info-sunset">Sunset</span>
+              <span class="info-right">{{ formatDateTime(weather.daily.sunset[0]) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="weather-information" v-if="weather">Weather data from: open-meteo.com</div>
+  </main>
+  <script>
+    const { createApp, ref, onMounted, watch, onBeforeUnmount } = Vue;
+
+    createApp({
+      setup() {
+        // Vars / States.
+        const darkModeToggle = ref(true);
+        const loading = ref(true);
+        const city = ref('');
+        const errorMsg = ref('');
+        const latitude = ref(null);
+        const longitude = ref(null);
+        const weather = ref(null);
+        const query = ref('');
+        const searchQuery = ref('');
+        const searchResults = ref([]);
+        const showSearchResults = ref(false);
+        const showSearchResultsNoMatch = ref(false);
+        let controller = null;
+        const searchWrap = ref(null);
+
+        // Close dropdown when clicking anywhere outside the search area.
+        const closeOnOutside = (e) => {
+          const el = searchWrap.value;
+          if (showSearchResults.value && el && !el.contains(e.target)) {
+            showSearchResults.value = false;
+          }
+        };
+
+        // Next hours for an hourly strip.
+        const currentHour = new Date().getHours();
+        const nextHours = ref([]);
+
+        for (let i = 1; i <= 5; i++) nextHours.value.push((currentHour + i) % 24);
+
+        // Next 6-day names (starting tomorrow).
+        function getNextSixDays() {
+          const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+          const today = new Date().getDay();
+          return Array.from({ length: 6 }, (_, i) => days[(today + i + 1) % 7]);
+        }
+        const nextSixDays = getNextSixDays();
+
+        // Theme toggle.
+        function toggleSiteTheme() {
+          const link = document.querySelector("link[rel~='icon']");
+          const imageUrl = darkModeToggle.value ? 'fav-light.ico' : 'fav-dark.ico';
+          document.body.classList.toggle('dark-mode');
+          document.body.classList.toggle('light-mode');
+          darkModeToggle.value = !darkModeToggle.value;
+          if (link) link.href = imageUrl;
+        }
+
+        // If a user searches for weather.
+        function fetchWeatherBySearchTerm(result) {
+          latitude.value = result.latitude;
+          longitude.value = result.longitude;
+          showSearchResults.value = false;
+          weather.value = null;
+          getLocationAndWeather();
+        }
+
+        watch(query, (val) => {
+          const s = val.trim();
+          if (s.length >= 3) {
+            searchQuery.value = s;
+            // showSearchResults.value = true;
+          } else {
+            searchQuery.value = '';
+            showSearchResults.value = false;
+            searchResults.value = [];
+            if (controller) controller.abort();
+          }
+        });
+
+        // Call geocoding whenever the search string changes.
+        watch(searchQuery, async (q) => {
+          if (!q) return;
+          searchResults.value = [];
+
+          if (controller) controller.abort();
+          controller = new AbortController();
+
+          const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=5&language=en&format=json`;
+
+          try {
+            const res = await fetch(url, { signal: controller.signal });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            searchResults.value = data.results || [];
+            showSearchResults.value = true;
+
+            if (searchResults.value.length) {
+              const { name, country, latitude, longitude } = searchResults.value[0];
+              // console.log(searchResults.value);
+              // console.log(`Top match: ${name}, ${country} → ${latitude}, ${longitude}`);
+            } else {
+              // console.log('No matches');
+              showSearchResultsNoMatch.value = true;
+            }
+          } catch (e) {
+            if (e.name !== 'AbortError') console.error('Geocoding error:', e);
+          }
+        });
+
+        // Get City name.
+        async function fetchCityName(lat, lon) {
+          const res = await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`
+          );
+          if (!res.ok) {
+            errorMsg.value = `City lookup failed (status ${res.status})`;
+            return null;
+          }
+
+          const data = await res.json();
+          return (data.city || data.locality || data.principalSubdivision || data.countryName || 'Unknown'  );
+        }
+
+        // Weather fetch.
+        async function fetchWeather(lat, lon) {
+          const url = new URL('https://api.open-meteo.com/v1/forecast');
+          url.search = new URLSearchParams({
+            latitude: String(lat),
+            longitude: String(lon),
+            daily: 'weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset',
+            hourly: 'temperature_2m,weather_code,uv_index',
+            current: 'temperature_2m,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m',
+            timezone: 'auto'
+          }).toString();
+
+          const res = await fetch(url);
+          if (!res.ok) {
+            errorMsg.value = 'Weather fetch failed';
+            return null;
+          }
+          weather.value = await res.json();
+        }
+
+        // Main flow.
+        async function getLocationAndWeather() {
+          weather.value = null;
+          loading.value = true;
+          errorMsg.value = '';
+
+          if (!('geolocation' in navigator)) {
+            errorMsg.value = 'Geolocation not supported in this browser.';
+            loading.value = false;
+            return;
+          }
+
+          navigator.geolocation.getCurrentPosition(async pos => {
+            try {
+              if (latitude.value === null && longitude.value === null) {
+                latitude.value = pos.coords.latitude;
+                longitude.value = pos.coords.longitude;
+              }
+
+              await fetchWeather(latitude.value, longitude.value);
+
+              // City name.
+              try {
+                city.value = await fetchCityName(latitude.value, longitude.value);
+                latitude.value = null;
+                longitude.value = null;
+              } catch (e) {
+                city.value = 'Unknown';
+              }
+            } catch (e) {
+              // console.error(e);
+              errorMsg.value = 'Could not fetch weather for your location.';
+            } finally {
+              loading.value = false;
+            }
+          }, err => {
+            // console.error(err);
+            errorMsg.value = 'Location access denied.';
+            loading.value = false;
+          }, { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 });
+        }
+
+        // WMO code text/emoji.
+        const weatherCodeMap = {
+          0:{text:"Clear sky",emoji:"☀️"},1:{text:"Mainly clear",emoji:"🌤️"},
+          2:{text:"Partly cloudy",emoji:"⛅"},3:{text:"Overcast",emoji:"☁️"},
+          45:{text:"Fog",emoji:"🌫️"},48:{text:"Depositing rime fog",emoji:"🌫️"},
+          51:{text:"Light drizzle",emoji:"🌦️"},53:{text:"Moderate drizzle",emoji:"🌦️"},55:{text:"Dense drizzle",emoji:"🌦️"},
+          56:{text:"Freezing drizzle (light)",emoji:"❄️"},57:{text:"Freezing drizzle (dense)",emoji:"❄️"},
+          61:{text:"Slight rain",emoji:"🌧️"},63:{text:"Moderate rain",emoji:"🌧️"},65:{text:"Heavy rain",emoji:"🌧️"},
+          66:{text:"Freezing rain (light)",emoji:"🌧️"},67:{text:"Freezing rain (heavy)",emoji:"🌧️"},
+          71:{text:"Slight snow",emoji:"🌨️"},73:{text:"Moderate snow",emoji:"🌨️"},75:{text:"Heavy snow",emoji:"❄️"},
+          77:{text:"Snow grains",emoji:"❄️"},
+          80:{text:"Slight rain showers",emoji:"🌦️"},81:{text:"Moderate rain showers",emoji:"🌦️"},82:{text:"Violent rain showers",emoji:"⛈️"},
+          85:{text:"Slight snow showers",emoji:"🌨️"},86:{text:"Heavy snow showers",emoji:"🌨️"},
+          95:{text:"Thunderstorm",emoji:"⛈️"},96:{text:"Thunderstorm, slight hail",emoji:"⛈️"},99:{text:"Thunderstorm, heavy hail",emoji:"⛈️"}
+        };
+
+        // Date format.
+        function formatDateTime(isoString) {
+          const date = new Date(isoString);
+          return date.toLocaleString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false });
+        }
+
+        onMounted(() => {
+          document.addEventListener('pointerdown', closeOnOutside, { capture: true });
+          getLocationAndWeather();
+        });
+
+        onBeforeUnmount(() => {
+          document.removeEventListener('pointerdown', closeOnOutside, { capture: true });
+        });
+        
+        return {
+          // Toggles.
+          darkModeToggle, toggleSiteTheme,
+          // Search.
+          query, showSearchResults, searchResults, showSearchResultsNoMatch, searchWrap,
+          // Weather.
+          fetchWeatherBySearchTerm, getLocationAndWeather,
+          // State / vars.
+          latitude, longitude, city, errorMsg, weather, loading,
+          // Data helpers.
+          weatherCodeMap, currentHour, nextHours, nextSixDays, formatDateTime
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+
+</html>
