@@ -16,9 +16,4 @@ Free to use.
 - Simple, responsive layout.
 
 ## Run
-Use a local server (recommended for geolocation & CORS). Examples:
-- VS Code Live Server
-- Node: `npx serve` or `npx http-server`
-- Python: `python3 -m http.server 8080`
-
-Open the served URL (e.g., `http://localhost:8080`). No build step required.
+Open index.html in any browser (or use a simple local server). No build step required.
