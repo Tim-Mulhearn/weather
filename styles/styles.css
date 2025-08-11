@@ -222,17 +222,6 @@ main {
 /*  !*box-shadow: var(--box-shadow), inset 0 -2px var(--accent-color);*!*/
 /*}*/
 
-/* TEMP TYPE & TOP USE LOCATION STATES FIX */
-.top-use-location:focus-visible,
-.temp-type:focus-visible {
-  box-shadow: var(--box-shadow);
-}
-
-.top-use-location:focus:not(:focus-visible),
-.temp-type:focus:not(:focus-visible) {
-  box-shadow: none; /* Remove for mouse/touch */
-}
-
 
 /* MAIN CONTENT SECTIONS */
 .main-left,
