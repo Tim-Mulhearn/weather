@@ -228,6 +228,7 @@
 
             if (searchResults.value.length) {
               const { name, country, latitude, longitude } = searchResults.value[0];
+              showSearchResultsNoMatch.value = false;
               // console.log(searchResults.value);
               // console.log(`Top match: ${name}, ${country} → ${latitude}, ${longitude}`);
             } else {
@@ -271,11 +272,13 @@
             return null;
           }
           weather.value = await res.json();
+          //console.log(weather);
         }
 
         // Main flow.
         async function getLocationAndWeather() {
           weather.value = null;
+          query.value = '';
           loading.value = true;
           errorMsg.value = '';
 
