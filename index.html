@@ -45,13 +45,14 @@
         </div>
       </div>
       <div class="loading-message" v-if="loading">Loading data...</div>
+      <div class="loading-message error-msg" v-if="errorMsg">{{ errorMsg }}</div>
       <!-- MAIN LEFT AND RIGHT SECTION -->
       <div class="main-container" v-if="weather">
         <!-- MAIN SECTION LEFT -->
         <div class="main-left">
           <div class="content main-weather">
 <!--            <div class="loading-message" v-if="loading">Loading data...</div>-->
-            <div class="error-msg" v-if="errorMsg">{{ errorMsg }}</div>
+<!--            <div class="error-msg" v-if="errorMsg">{{ errorMsg }}</div>-->
             <!-- MAIN WEATHER -->
             <div class="main-weather-row" v-if="weather">
               <span class="main-weather-icon">
@@ -251,7 +252,7 @@
           }
 
           const data = await res.json();
-          return (data.city || data.locality || data.principalSubdivision || data.countryName || 'Unknown'  );
+          return (data.city || data.locality || data.principalSubdivision || data.countryName || 'Unknown');
         }
 
         // Weather fetch.
