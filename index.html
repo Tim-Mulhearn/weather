@@ -316,7 +316,7 @@
             // console.error(err);
             errorMsg.value = 'Location access denied.';
             loading.value = false;
-          }, { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 });
+          }, { enableHighAccuracy: false, timeout: 30000, maximumAge: 300000 });
         }
 
         // WMO code text/emoji.
