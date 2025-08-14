@@ -1,6 +1,6 @@
 # Vue Weather App
 
-Free to use.
+Built with vue 3, free to use.
 
 ## What I built
 - City search with a 3+ character gate using Vue 3 watchers.
