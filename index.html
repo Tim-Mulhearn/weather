@@ -10,15 +10,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
-<!--  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>-->
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 </head>
 <body class="dark-mode">
   <main id="app">
     <section>
-      <!-- TOP SECTION -->
+      <!-- Top section -->
       <div class="top-container">
-        <!-- TOP BAR LEFT -->
+        <!-- Top bar left -->
         <div class="top-left" ref="searchWrap">
           <input type="text" placeholder="Search for a city..." v-model="query">
           <div class="search-results" v-if="showSearchResults">
@@ -34,27 +33,23 @@
             </ul>
           </div>
         </div>
-        <!-- TOP BAR MIDDLE -->
+        <!-- Top bar middle -->
         <div class="top-middle">
           <button class="top-use-location" @click="getLocationAndWeather">Use My location</button>
         </div>
-        <!-- TOP BAR RIGHT -->
+        <!-- Top bar right -->
         <div class="top-right">
-<!--          <button class="temp-type">&deg;C</button>-->
-<!--          <button class="temp-type">&deg;F</button>-->
           <button class="temp-type toggle" @click="toggleSiteTheme()">{{ darkModeToggle ? '☀️' : '🌙' }}</button>
         </div>
       </div>
       <div class="loading-message" v-if="loading">Loading data...</div>
       <div class="loading-message error-msg" v-if="errorMsg">{{ errorMsg }}</div>
-      <!-- MAIN LEFT AND RIGHT SECTION -->
+      <!-- Main left and right section -->
       <div class="main-container" v-if="weather">
-        <!-- MAIN SECTION LEFT -->
+        <!-- Main section left -->
         <div class="main-left">
           <div class="content main-weather">
-<!--            <div class="loading-message" v-if="loading">Loading data...</div>-->
-<!--            <div class="error-msg" v-if="errorMsg">{{ errorMsg }}</div>-->
-            <!-- MAIN WEATHER -->
+            <!-- Main weather -->
             <div class="main-weather-row" v-if="weather">
               <span class="main-weather-icon">
                 {{ weatherCodeMap[weather.current.weather_code]?.emoji || "❓" }}
@@ -75,7 +70,7 @@
               Updated at {{ formatDateTime(weather.current.time) }}
             </div>
           </div>
-          <!-- HOURLY FORECAST -->
+          <!-- Hourly forecast -->
           <div class="content hourly-forecast" v-if="weather">
             <div class="section-title">Today</div>
             <div class="weather-today-container">
@@ -86,7 +81,7 @@
               </div>
             </div>
           </div>
-          <!-- FEELS LIKE -->
+          <!-- Feels like -->
           <div class="content feels-like" v-if="weather">
             <div class="section-title">Winds</div>
             <div class="details-info">
@@ -105,9 +100,9 @@
             </div>
           </div>
         </div>
-        <!-- MAIN CONTAINER RIGHT -->
+        <!-- Main container right -->
         <div class="main-right" v-if="weather">
-          <!-- WEEKLY FORECAST -->
+          <!-- Weekly forecast-->
           <div class="content weekly-forecast">
             <div class="section-title">Forecast</div>
             <template v-for="(day, index) in nextSixDays" :key="day">
@@ -118,7 +113,7 @@
               <div class="separator" v-if="index !== nextSixDays.length - 1"></div>
             </template>
           </div>
-          <!-- DETAILS -->
+          <!-- Details -->
           <div class="content details">
             <div class="section-title">Daylight</div>
             <div class="details-info">
@@ -141,7 +136,7 @@
 
     createApp({
       setup() {
-        // Vars / States.
+        // Vars / States
         const darkModeToggle = ref(true);
         const loading = ref(true);
         const city = ref('');
@@ -157,7 +152,7 @@
         let controller = null;
         const searchWrap = ref(null);
 
-        // Close dropdown when clicking anywhere outside the search area.
+        // Close dropdown when clicking anywhere outside the search area
         const closeOnOutside = (e) => {
           const el = searchWrap.value;
           if (showSearchResults.value && el && !el.contains(e.target)) {
@@ -165,13 +160,13 @@
           }
         };
 
-        // Next hours for an hourly strip.
+        // Next few hours for an hourly strip
         const currentHour = new Date().getHours();
         const nextHours = ref([]);
 
         for (let i = 1; i <= 5; i++) nextHours.value.push((currentHour + i) % 24);
 
-        // Next 6-day names (starting tomorrow).
+        // Next 6-day names (starting tomorrow)
         function getNextSixDays() {
           const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
           const today = new Date().getDay();
@@ -179,7 +174,7 @@
         }
         const nextSixDays = getNextSixDays();
 
-        // Theme toggle.
+        // Theme toggle
         function toggleSiteTheme() {
           const link = document.querySelector("link[rel~='icon']");
           const imageUrl = darkModeToggle.value ? 'fav-light.ico' : 'fav-dark.ico';
@@ -189,7 +184,7 @@
           if (link) link.href = imageUrl;
         }
 
-        // If a user searches for weather.
+        // If a user searches for weather
         function fetchWeatherBySearchTerm(result) {
           latitude.value = result.latitude;
           longitude.value = result.longitude;
@@ -211,7 +206,7 @@
           }
         });
 
-        // Call geocoding whenever the search string changes.
+        // Call geocoding whenever the search string changes
         watch(searchQuery, async (q) => {
           if (!q) return;
           searchResults.value = [];
@@ -242,11 +237,12 @@
           }
         });
 
-        // Get City name.
+        // Get City name
         async function fetchCityName(lat, lon) {
           const res = await fetch(
             `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`
           );
+
           if (!res.ok) {
             errorMsg.value = `City lookup failed (status ${res.status})`;
             return null;
@@ -256,7 +252,7 @@
           return (data.city || data.locality || data.principalSubdivision || data.countryName || 'Unknown');
         }
 
-        // Weather fetch.
+        // Weather fetch
         async function fetchWeather(lat, lon) {
           const url = new URL('https://api.open-meteo.com/v1/forecast');
           url.search = new URLSearchParams({
@@ -277,7 +273,7 @@
           //console.log(weather);
         }
 
-        // Main flow.
+        // Main flow
         async function getLocationAndWeather() {
           weather.value = null;
           query.value = '';
@@ -320,7 +316,7 @@
           }, { enableHighAccuracy: false, timeout: 30000, maximumAge: 300000 });
         }
 
-        // WMO code text/emoji.
+        // WMO code text/emoji
         const weatherCodeMap = {
           0:{text:"Clear sky",emoji:"☀️"},1:{text:"Mainly clear",emoji:"🌤️"},
           2:{text:"Partly cloudy",emoji:"⛅"},3:{text:"Overcast",emoji:"☁️"},
@@ -336,7 +332,7 @@
           95:{text:"Thunderstorm",emoji:"⛈️"},96:{text:"Thunderstorm, slight hail",emoji:"⛈️"},99:{text:"Thunderstorm, heavy hail",emoji:"⛈️"}
         };
 
-        // Date format.
+        // Date formatter
         function formatDateTime(isoString) {
           const date = new Date(isoString);
           return date.toLocaleString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false });
@@ -352,20 +348,19 @@
         });
         
         return {
-          // Toggles.
+          // Toggles
           darkModeToggle, toggleSiteTheme,
-          // Search.
+          // Search
           query, showSearchResults, searchResults, showSearchResultsNoMatch, searchWrap,
-          // Weather.
+          // Weather
           fetchWeatherBySearchTerm, getLocationAndWeather,
-          // State / vars.
+          // State / vars
           latitude, longitude, city, errorMsg, weather, loading,
-          // Data helpers.
+          // Data helpers
           weatherCodeMap, currentHour, nextHours, nextSixDays, formatDateTime
         };
       }
     }).mount('#app');
   </script>
 </body>
-
 </html>

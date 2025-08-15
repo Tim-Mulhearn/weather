@@ -2,7 +2,7 @@
   box-sizing: border-box;
 }
 
-/* SITE DEFAULTS */
+/* Theme defaults */
 :root {
   --border-radius: 0.2rem;
   --section-spacing: 1rem;
@@ -15,7 +15,7 @@
   --font-size-very-large: 2rem;
 }
 
-/* MAIN COLORS - DARK MODE */
+/* Main colors - dark mode */
 body.dark-mode {
   --background-color: #101826;
   --border-color: #2A3645;
@@ -28,7 +28,7 @@ body.dark-mode {
   --search-results: #1D293D;
 }
 
-/* MAIN COLORS - LIGHT MODE */
+/* Main colors - light mode */
 body.light-mode {
   --background-color: #F5F7FB;
   --border-color: #D6DFEA;
@@ -41,6 +41,7 @@ body.light-mode {
   --search-results: #CAD5E2;
 }
 
+/* Base */
 body {
   margin: 0;
   padding: 0;
@@ -60,7 +61,7 @@ main {
   border-radius: var(--border-radius)
 }
 
-/* TOGGLE THEME BUTTON */
+/* Toggle theme button */
 .toggle-theme {
   display: inline-block;
   transition: transform 0.2s ease;
@@ -69,12 +70,12 @@ main {
   right: 0.6rem;
 }
 
-/* TOGGLE THEME BUTTON HOVER*/
+/* Toggle theme button hover */
 .toggle-theme:hover {
   transform: scale(1.4);
 }
 
-/* TOP ROW SECTION / MAIN SECTION LAYOUT */
+/* Top row section / Main layouts section */
 .top-container,
 .main-container {
   display: flex;
@@ -92,12 +93,12 @@ main {
   margin: 0 1rem 1rem 1rem;
 }
 
-/* TOP BAR LEFT */
+/* Top Bar left */
 .top-left {
   flex: 50%;
 }
 
-/* TOP BAR LEFT SEARCH */
+/* Top bar left search */
 .top-left input {
   width: 96%;
   height: 3rem;
@@ -112,19 +113,17 @@ main {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-/* TOP BAR LEFT SEARCH HOVER */
+/* Top bar left search hover */
 .top-left input:focus,
 .top-left input:hover,
 .top-left input:active {
   box-shadow: 0 0 0 2px rgba(73, 39, 245, 0.3);
 }
 
-/* TOP BAR LEFT SEARCH */
 .search-results {
   position: absolute;
   margin: 0.1rem 0 0 0;
   padding: 1rem;
-  /*background: var(--section-background-color);*/
   background: var(--search-results);
   width: 23%;
   z-index:1000;
@@ -147,7 +146,7 @@ main {
   box-shadow: var(--box-shadow), 0 2px 6px rgba(0,0,0,0.2);
 }
 
-/* LOADING DATA */
+/* Loading data message */
 .loading-message {
   margin: 3rem;
   text-align: center;
@@ -155,12 +154,12 @@ main {
   color: var(--font-color);
 }
 
-/* TOP BAR MIDDLE */
+/* Top bar middle */
 .top-middle {
   flex: 30%;
 }
 
-/* TOP BAR MIDDLE USE LOCATION */
+/* Top bar middle use location */
 .top-use-location {
   padding: 0.5rem 0.75rem;
   width: 100%;
@@ -175,27 +174,24 @@ main {
   /*font-weight: var(--font-weight-bold);*/
 }
 
-/* TOP BAR MIDDLE USE LOCATION HOVER */
+/* Top bar middle use location hover */
 .top-use-location:hover {
   box-shadow: var(--box-shadow);
 }
 
-/* TOP BAR RIGHT */
+/* Top bar right */
 .top-right {
   flex: 20%;
   display: flex;
   justify-content: flex-end;
-  /*align-items: center;*/
 }
 
-/* TOP BAR TOGGLE */
+/* Top bar theme toggle */
 .top-right .temp-type {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  /*height: 2.0625rem;*/
   height: 3rem;
-  /*height: 2rem;*/
   width: 7rem;
   padding-left: 10px;
   padding-bottom: 0px;
@@ -204,32 +200,23 @@ main {
   border: none;
   margin-left: 0.5rem;
   color: var(--font-color);
-  /*font-weight: var(--font-weight-bold);*/
   font-size: var(--font-size);
   transition: transform 0.2s ease;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-/* TOP BAR TOGGLE HOVER */
+/* Top bar theme toggle hover */
 .temp-type.toggle:hover{
   box-shadow: var(--box-shadow);
 }
 
-/* TOP BAR TEMP TOGGLE HOVER FOCUS */
-/*.temp-type.toggle:focus,*/
-/*.temp-type.toggle:active {*/
-/*  !*background: var(--border-bottom-highlighted);*!*/
-/*  !*box-shadow: var(--box-shadow), inset 0 -2px var(--accent-color);*!*/
-/*}*/
-
-
-/* MAIN CONTENT SECTIONS */
+/* Main content sections */
 .main-left,
 .main-right {
   flex: 50%;
 }
 
-/* LAYOUT AND SPACING */
+/* Layouts ans spacing */
 .content {
   padding: 0.8rem;
   border-radius: var(--border-radius);
@@ -250,7 +237,7 @@ main {
   border-bottom: var(--separator);
 }
 
-/* DISPLAY SECTIONS */
+/* Display sections */
 .section-title {
   font-size: var(--font-size-large);
   font-weight: var(--font-weight-bold);
@@ -269,7 +256,7 @@ main {
   text-align: right;
 }
 
-/* CURRENT WEATHER */
+/* Current weather */
 .weather-today-container {
   display: flex;
   align-items: flex-start;
@@ -291,10 +278,6 @@ main {
   padding: 0.25rem 0;
   text-align: center;
 }
-
-/*.main-weather {*/
-/*  width: 100%;*/
-/*}*/
 
 .main-weather-row {
   display: flex;
@@ -331,12 +314,12 @@ main {
   margin-top: 0.8rem;
 }
 
-/* ERROR MESSAGES */
+/* Error messages */
 .error-msg {
   color: red;
 }
 
-/* WEATHER SOURCE NOTIFICATION */
+/* Weather source footer text */
 .main-weather-icon {
   font-size: 5rem;
 }
@@ -349,7 +332,7 @@ main {
   padding-bottom: 1rem;
 }
 
-/* SECTIONS SPACING */
+/* Sections spacing */
 .hourly-forecast,
 .feels-like,
 .details,
@@ -358,62 +341,53 @@ main {
   margin-top: var(--section-spacing);
 }
 
-/* MEDIUM SCREENS */
+/* Medium screens */
 @media (min-width: 768px) and (max-width: 1023px) {
-  /*body {*/
-  /*  background: magenta;*/
-  /*}*/
-
-  /* MAIN WINDOW SIZE */
+  /* Main */
   main {
     width: 90vw;
   }
 
+  /* Top left section */
   .top-left input {
     width: 94%;
   }
 
-  /* SEARCH RESULTS */
   .search-results {
     width: 40%;
   }
-
 }
 
-/* SMALL SCREENS */
+/* Small screens */
 @media (max-width: 768px) {
-  /*body {*/
-  /*  background: lightblue;*/
-  /*}*/
-
-  /* MAIN WINDOW SIZE */
+  /* Main */
   main {
     width: 90vw;
   }
 
-  /* TOP LEFT SECTION */
+  /* Top left section */
   .top-left {
     flex: 100%;
   }
 
-  /* TOP LEFT SEARCH */
+  /* Top left section search */
   .top-left input,
   .content {
     width: 100%;
   }
 
-  /* TOP MIDDLE SECTION */
+  /* Top middle section */
   .top-middle {
     flex: 50%;
   }
 
-  /* TOP RIGHT SECTION */
+  /* Top right section */
   .top-right {
     flex: 50%;
     margin-right: 0;
   }
 
-  /* MAIN CONTENT SECTIONS */
+  /* Main content sections */
   .middle-left,
   .middle-right,
   .main-left,
@@ -421,7 +395,7 @@ main {
     flex: 100%;
   }
 
-  /* SECTIONS SPACING */
+  /* Section spacing */
   .top-middle,
   .top-right {
     margin-top: var(--section-spacing);
@@ -435,12 +409,8 @@ main {
     margin-top: -14px !important;
   }
 
-  /* SEARCH RESULTS */
+  /* Search results  */
   .search-results {
     width: 81%;
   }
-
-  /*.content {*/
-  /*  width: 100%;*/
-  /*}*/
 }
