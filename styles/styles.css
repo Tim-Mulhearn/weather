@@ -324,12 +324,21 @@ main {
   font-size: 5rem;
 }
 
-.weather-information {
+.weather-information,
+.github-information {
   text-align: center;
   font-size: 0.8rem;
   font-style: italic;
   color: var(--font-color);
   padding-bottom: 1rem;
+}
+
+.github-information a {
+  color: var(--font-color);
+}
+
+.github-information a:hover {
+  color: var(--accent-color);
 }
 
 /* Sections spacing */

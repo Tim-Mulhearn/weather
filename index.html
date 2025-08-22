@@ -130,6 +130,7 @@
       </div>
     </section>
     <div class="weather-information" v-if="weather">Weather data from: https://open-meteo.com/</div>
+    <div class="github-information" v-if="weather"><a href="https://github.com/Tim-Mulhearn/weather" target="_blank"><span>GitHub</span></a></div>
   </main>
   <script>
     const { createApp, ref, onMounted, watch, onBeforeUnmount } = Vue;
