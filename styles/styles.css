@@ -57,7 +57,7 @@ main {
   margin: 1rem auto 1rem auto;
   width: 50vw;
   height: auto;
-  border: 1px solid var(--border-color);
+  /*border: 1px solid var(--border-color);*/
   border-radius: var(--border-radius)
 }
 
