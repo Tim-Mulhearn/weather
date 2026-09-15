@@ -274,53 +274,7 @@
           //console.log(weather);
         }
 
-        // Main flow
-        /*
-        async function getLocationAndWeather() {
-          weather.value = null;
-          query.value = '';
-          loading.value = true;
-          errorMsg.value = '';
-
-          if (!('geolocation' in navigator)) {
-            errorMsg.value = 'Geolocation not supported in this browser.';
-            loading.value = false;
-            return;
-          }
-
-          navigator.geolocation.getCurrentPosition(async pos => {
-            try {
-              if (latitude.value === null && longitude.value === null) {
-                latitude.value = pos.coords.latitude;
-                longitude.value = pos.coords.longitude;
-              }
-
-              await fetchWeather(latitude.value, longitude.value);
-
-              // City name.
-              try {
-                city.value = await fetchCityName(latitude.value, longitude.value);
-                latitude.value = null;
-                longitude.value = null;
-              } catch (e) {
-                city.value = 'Unknown';
-              }
-            } catch (e) {
-              // console.error(e);
-              errorMsg.value = 'Could not fetch weather for your location.';
-            } finally {
-              loading.value = false;
-            }
-          }, err => {
-            console.log('Geolocation error:', err.code, err.message);
-            errorMsg.value = `Location error: ${err.code} - ${err.message}`;
-            loading.value = false;
-          }, 
-          //{ enableHighAccuracy: false, timeout: 30000, maximumAge: 300000 });
-          { enableHighAccuracy: true, timeout: 30000, maximumAge: 0 });
-        }
-        */  
-       
+        // Main flow       
         async function getLocationAndWeather() {
           weather.value = null;
           query.value = '';
