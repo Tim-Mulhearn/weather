@@ -327,6 +327,28 @@
           loading.value = true;
           errorMsg.value = '';
 
+          // Search result already supplied coordinates
+          if (latitude.value !== null && longitude.value !== null) {
+            try {
+              await fetchWeather(latitude.value, longitude.value);
+
+              try {
+                city.value = await fetchCityName(latitude.value, longitude.value);
+              } catch (e) {
+                city.value = 'Unknown';
+              }
+
+              latitude.value = null;
+              longitude.value = null;
+            } catch (e) {
+              errorMsg.value = 'Could not fetch weather.';
+            } finally {
+              loading.value = false;
+            }
+
+            return;
+          }
+
           if (!('geolocation' in navigator)) {
             errorMsg.value = 'Geolocation not supported in this browser.';
             loading.value = false;
@@ -335,28 +357,31 @@
 
           navigator.geolocation.getCurrentPosition(async pos => {
             try {
-              if (latitude.value === null && longitude.value === null) {
-                latitude.value = pos.coords.latitude;
-                longitude.value = pos.coords.longitude;
-              }
+              latitude.value = pos.coords.latitude;
+              longitude.value = pos.coords.longitude;
 
               await fetchWeather(latitude.value, longitude.value);
 
               try {
                 city.value = await fetchCityName(latitude.value, longitude.value);
-                latitude.value = null;
-                longitude.value = null;
               } catch (e) {
                 city.value = 'Unknown';
               }
+
+              latitude.value = null;
+              longitude.value = null;
+
             } catch (e) {
               errorMsg.value = 'Could not fetch weather for your location.';
             } finally {
               loading.value = false;
             }
+
           }, async err => {
+
             console.log('Browser geolocation failed:', err.code, err.message);
 
+            // Fall back to IP location
             try {
               const res = await fetch('https://ipinfo.io/json');
 
@@ -370,12 +395,14 @@
               await fetchWeather(lat, lon);
 
               city.value = data.city || data.region || 'Unknown';
+
             } catch (e) {
-              console.error('IP location failed:', e);
+              console.error('IP location fallback failed:', e);
               errorMsg.value = 'Could not determine your location.';
             } finally {
               loading.value = false;
             }
+
           }, {
             enableHighAccuracy: true,
             timeout: 30000,
