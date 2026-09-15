@@ -311,8 +311,8 @@
               loading.value = false;
             }
           }, err => {
-            // console.error(err);
-            errorMsg.value = 'Location access denied.';
+            console.log('Geolocation error:', err.code, err.message);
+            errorMsg.value = `Location error: ${err.code} - ${err.message}`;
             loading.value = false;
           }, { enableHighAccuracy: false, timeout: 30000, maximumAge: 300000 });
         }
