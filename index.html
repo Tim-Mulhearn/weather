@@ -314,7 +314,9 @@
             console.log('Geolocation error:', err.code, err.message);
             errorMsg.value = `Location error: ${err.code} - ${err.message}`;
             loading.value = false;
-          }, { enableHighAccuracy: false, timeout: 30000, maximumAge: 300000 });
+          }, 
+          //{ enableHighAccuracy: false, timeout: 30000, maximumAge: 300000 });
+          { enableHighAccuracy: true, timeout: 30000, maximumAge: 0 });
         }
 
         // WMO code text/emoji
