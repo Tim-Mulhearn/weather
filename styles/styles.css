@@ -156,7 +156,7 @@ main {
 
 /* Top bar middle */
 .top-middle {
-  flex: 30%;
+  flex: 50%;
 }
 
 /* Top bar middle use location */
@@ -358,13 +358,13 @@ main {
   }
 
   /* Top left section */
-  .top-left input {
+  /* .top-left input {
     width: 94%;
   }
 
   .search-results {
     width: 40%;
-  }
+  } */
 }
 
 /* Small screens */
@@ -387,14 +387,14 @@ main {
 
   /* Top middle section */
   .top-middle {
-    flex: 50%;
+    flex: 100%;
   }
 
   /* Top right section */
-  .top-right {
-    flex: 50%;
+  /* .top-right {
+    flex: 100%;
     margin-right: 0;
-  }
+  } */
 
   /* Main content sections */
   .middle-left,

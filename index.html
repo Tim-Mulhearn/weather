@@ -38,9 +38,9 @@
           <button class="top-use-location" @click="getLocationAndWeather">Use My location</button>
         </div>
         <!-- Top bar right -->
-        <div class="top-right">
+        <!-- <div class="top-right">
           <button class="temp-type toggle" @click="toggleSiteTheme()">{{ darkModeToggle ? '☀️' : '🌙' }}</button>
-        </div>
+        </div> -->
       </div>
       <div class="loading-message" v-if="loading">Loading data...</div>
       <div class="loading-message error-msg" v-if="errorMsg">{{ errorMsg }}</div>
