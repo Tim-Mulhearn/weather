@@ -348,14 +348,14 @@ main {
 /* Medium screens */
 @media (min-width: 768px) and (max-width: 1023px) {
   main {
-    width: 90vw;
+    width: 95vw;
   }
 }
 
 /* Small screens */
 @media (max-width: 768px) {
   main {
-    width: 90vw;
+    width: 95vw;
   }
 
   /* Search and location stack */
