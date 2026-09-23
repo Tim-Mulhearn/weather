@@ -346,7 +346,7 @@ main {
 }
 
 /* Tablet and smaller screens */
-@media (max-width: 1023px) {
+@media (max-width: 1199px) {
 
   main {
     width: 95vw;
@@ -357,12 +357,10 @@ main {
 /* Small screens */
 @media (max-width: 600px) {
 
-  /* Search and location stack */
   .top-container {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  /* Main content stacks */
   .main-container {
     grid-template-columns: minmax(0, 1fr);
   }
